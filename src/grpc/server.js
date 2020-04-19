@@ -7,6 +7,7 @@ import Blog from "../models/Blog";
 dotenv.config();
 
 const PROTO_PATH = "./blogs.proto";
+const GRPC_PORT = process.env.GRPC_PORT;
 const MONGO_HOST = process.env.MONGO_HOST;
 const MONGO_USER = process.env.MONGO_USER;
 const MONGO_PASS = process.env.MONGO_PASS;
@@ -84,6 +85,6 @@ server.addService(blogsProto.BlogService.service, {
   },
 });
 
-server.bind(`localhost:30043`, grpc.ServerCredentials.createInsecure());
+server.bind(`localhost:${GRPC_PORT}`, grpc.ServerCredentials.createInsecure());
 console.log("Server running on localhost:30043");
 server.start();
