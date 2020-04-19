@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+service BlogService{
+    rpc GetAll (Empty) returns (BlogList) {};
+    rpc Get (BlogRequestId) returns (Blog) {};
+    rpc Insert (Blog) returns (Blog) {};
+    rpc Update (Blog) returns (Blog) {};
+    rpc Remove (BlogRequestId) returns (Empty) {};
+}
+
+message Empty {}
+
+message BlogRequestId {
+    string id=1;
+}
+
+message Blog {
+    string id=1;
+    string author=2;
+    string title=3;
+    string body=4;
+}
+
+message BlogList {
+    repeated Blog blogs=1;
+}
