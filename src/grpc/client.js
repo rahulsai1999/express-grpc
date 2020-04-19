@@ -1,16 +1,17 @@
 import grpc from "grpc";
 import dotenv from "dotenv";
-import protoLoader from "@grpc/proto-loader";
+import { loadSync } from "@grpc/proto-loader";
 
 dotenv.config();
 const GRPC_PORT = process.env.GRPC_PORT;
-const PROTO_PATH = "./blogs.proto";
+const PROTO_PATH = "src/grpc/blogs.proto";
 
-let packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+let packageDefinition = loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
   enums: String,
   arrays: true,
+  includeDirs: ["./"],
 });
 
 const BlogService = grpc.loadPackageDefinition(packageDefinition).BlogService;

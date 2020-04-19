@@ -1,12 +1,12 @@
 import grpc from "grpc";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import protoLoader from "@grpc/proto-loader";
+import { loadSync } from "@grpc/proto-loader";
 import Blog from "../models/Blog";
 
 dotenv.config();
 
-const PROTO_PATH = "./blogs.proto";
+const PROTO_PATH = "src/grpc/blogs.proto";
 const GRPC_PORT = process.env.GRPC_PORT;
 const MONGO_HOST = process.env.MONGO_HOST;
 const MONGO_USER = process.env.MONGO_USER;
@@ -15,13 +15,15 @@ const MONGO_PASS = process.env.MONGO_PASS;
 mongoose.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}`, {
   useNewUrlParser: true,
   useFindAndModify: true,
+  useUnifiedTopology: true,
 });
 
-let packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+let packageDefinition = loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
   enums: String,
   arrays: true,
+  includeDirs: ["."],
 });
 
 let blogsProto = grpc.loadPackageDefinition(packageDefinition);

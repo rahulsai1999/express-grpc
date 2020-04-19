@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node src/index.js"
+    "start": "babel-node src/index.js",
+    "server": "babel-node src/grpc/server.js"
   },
   "author": "",
   "license": "ISC",
