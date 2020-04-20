@@ -11,7 +11,6 @@ let packageDefinition = loadSync(PROTO_PATH, {
   longs: String,
   enums: String,
   arrays: true,
-  includeDirs: ["./"],
 });
 
 const BlogService = grpc.loadPackageDefinition(packageDefinition).BlogService;

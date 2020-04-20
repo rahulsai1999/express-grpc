@@ -23,7 +23,6 @@ let packageDefinition = loadSync(PROTO_PATH, {
   longs: String,
   enums: String,
   arrays: true,
-  includeDirs: ["."],
 });
 
 let blogsProto = grpc.loadPackageDefinition(packageDefinition);
@@ -32,58 +31,45 @@ const server = new grpc.Server();
 
 server.addService(blogsProto.BlogService.service, {
   getAll: (_, callback) => {
-    Blog.find({})
-      .then((blogs) => {
-        callback(null, { data: blogs });
-      })
-      .catch((err) => console.log(err));
+    Blog.find().exec((err, blogs) => {
+      err ? console.log(err) : callback(null, { blogs });
+    });
   },
   get: (call, callback) => {
     const { id } = call.request;
-    Blog.find({ _id: id })
-      .then((blog) => {
-        blog
-          ? callback(null, { data: blog })
-          : callback({ code: grpc.status.NOT_FOUND, details: "Not found" });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    Blog.find({ _id: id }).exec((err, blog) => {
+      err
+        ? console.log(err)
+        : blog
+        ? callback(null, blog)
+        : callback({ code: grpc.status.NOT_FOUND, details: "Not found" });
+    });
   },
   insert: (call, callback) => {
     const blog = call.request;
-    Blog.create(blog)
-      .then((createdBlog) => {
-        callback(null, { data: createdBlog });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    Blog.create(blog, (err, createdBlog) => {
+      err ? console.log(err) : callback(null, createdBlog);
+    });
   },
   update: (call, callback) => {
     const { id, author, title, body } = call.request;
     Blog.findOneAndUpdate(
       { _id: id },
       { author: author, title: title, body: body }
-    )
-      .then((blog) => {
-        callback(null, { data: blog });
-      })
-      .catch((err) => {
-        console.log(err);
-        callback({ code: grpc.status.NOT_FOUND, details: "Not found" });
-      });
+    ).exec((err, updatedBlog) => {
+      err ? console.log(err) : callback(null, updatedBlog);
+    });
   },
   remove: (call, callback) => {
     const { id } = call.request;
-    Blog.findOneAndDelete({ _id: id })
-      .then((blog) => {
-        callback(null, {});
-      })
-      .catch((err) => {
+    Blog.findOneAndDelete({ _id: id }).exec((err) => {
+      if (err) {
         console.log(err);
         callback({ code: grpc.status.NOT_FOUND, details: "Not found" });
-      });
+      } else {
+        callback(null, {});
+      }
+    });
   },
 });
 
